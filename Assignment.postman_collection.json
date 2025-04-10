@@ -1,0 +1,305 @@
+{
+	"info": {
+		"_postman_id": "c8762703-d580-40cd-ae30-95912a9c1ade",
+		"name": "Assignment",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17349752",
+		"_collection_link": "https://speeding-escape-655735.postman.co/workspace/Basics-of-API-Testing-~5654bb4b-5328-4a39-b91b-d3cef1be2885/collection/17349752-c8762703-d580-40cd-ae30-95912a9c1ade?action=share&source=collection_link&creator=17349752"
+	},
+	"item": [
+		{
+			"name": "Invalid Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Login Failure - Invalid Credentials\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.errors).to.not.be.null;",
+							"    pm.expect(jsonData.errors[0].message).to.eql(\"WRONG_CREDENTIALS\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"query\": \"mutation { login(email: \\\"test@example.com\\\", password: \\\"password\\\") { token } }\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://demo.api.julesai.com/graphql",
+					"protocol": "https",
+					"host": [
+						"demo",
+						"api",
+						"julesai",
+						"com"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Valid Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Login success - token received\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.data.login.token).to.be.a(\"string\");",
+							"    pm.expect(jsonData.data.login.token).not.to.be.null;",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"query\": \"mutation Login { login(email: \\\"qa@julesai.com\\\", password: \\\"Jay@2132001\\\") { token } }\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://demo.api.julesai.com/graphql",
+					"protocol": "https",
+					"host": [
+						"demo",
+						"api",
+						"julesai",
+						"com"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "400 scenario",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Should return 400\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json.errors).to.be.an(\"array\");",
+							"    pm.expect(json.errors[0].message).to.include(\"Syntax Error\");",
+							"    pm.response.to.have.status(400);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"query\": \"mutation { login(email: , password: ) }\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://demo.api.julesai.com/graphql",
+					"protocol": "https",
+					"host": [
+						"demo",
+						"api",
+						"julesai",
+						"com"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Data Validation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Check filteredSources exists and is an array",
+							"pm.test(\"filteredSources is returned\", function () {",
+							"    pm.expect(response.data.filteredSources).to.be.an(\"array\");",
+							"});",
+							"",
+							"// Validate first result has id = 1 and value = \"Call\"",
+							"pm.test(\"First item has id = 1 and value = 'Call'\", function () {",
+							"    const first = response.data.filteredSources[0];",
+							"    pm.expect(first.id).to.eql(\"1\");",
+							"    pm.expect(first.value.toLowerCase()).to.eql(\"call\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InFhQGp1bGVzYWkuY29tIiwiZW1haWxTaWduYXR1cmUiOm51bGwsImVuYWJsZVBlcm1pdGlvIjpudWxsLCJmaXJzdE5hbWUiOiJRQSIsImlkIjo0NTQsImlzRXh0ZXJuYWwiOm51bGwsImxhbmd1YWdlIjoiRU4iLCJsYXN0TmFtZSI6Ikp1bGVzIiwib3JnYW5pemF0aW9uSWQiOiJkZW1vX3dtX2xvdHJfZXh0ciIsInJvbGVzIjpbXSwidWlkIjoiOWE3MDI2OGUiLCJ2aWV3R3JvdXAiOm51bGwsImlhdCI6MTc0NDI5MDYwOX0.mcmGfqZvrJjSYEVX9lJ0yY1qnwaEkmjDyHDBgtWsvDg",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"query\": \"query FilteredSources { filteredSources(input: { searchText: \\\"Call\\\" }) { id value } }\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://demo.api.julesai.com/graphql",
+					"protocol": "https",
+					"host": [
+						"demo",
+						"api",
+						"julesai",
+						"com"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Internal Server Error",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Check for internal server error\", function () {",
+							"    const res = pm.response.json();",
+							"    pm.expect(res.errors[0].extensions.code).to.eql(\"INTERNAL_SERVER_ERROR\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InFhQGp1bGVzYWkuY29tIiwiZW1haWxTaWduYXR1cmUiOm51bGwsImVuYWJsZVBlcm1pdGlvIjpudWxsLCJmaXJzdE5hbWUiOiJRQSIsImlkIjo0NTQsImlzRXh0ZXJuYWwiOm51bGwsImxhbmd1YWdlIjoiRU4iLCJsYXN0TmFtZSI6Ikp1bGVzIiwib3JnYW5pemF0aW9uSWQiOiJkZW1vX3dtX2xvdHJfZXh0ciIsInJvbGVzIjpbXSwidWlkIjoiOWE3MDI2OGUiLCJ2aWV3R3JvdXAiOm51bGwsImlhdCI6MTc0NDI5MDYwOX0.mcmGfqZvrJjSYEVX9lJ0yY1qnwaEkmjDyHDBgtWsvDg",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"query\": \"mutation DeleteAllocation {\\n  deleteAllocation(input: { id: \\\"\\\" })\\n}\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://demo.api.julesai.com/graphql",
+					"protocol": "https",
+					"host": [
+						"demo",
+						"api",
+						"julesai",
+						"com"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
